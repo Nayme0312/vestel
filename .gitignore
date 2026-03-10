@@ -1,10 +1,14 @@
-# Environment variables (credenciales - NUNCA subir al repo)
+# =========================
+# Environment variables
+# =========================
 .env
 .env.*
 !.env.example
 backend/.env
 
+# =========================
 # Logs
+# =========================
 logs
 *.log
 npm-debug.log*
@@ -13,13 +17,31 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# =========================
+# Dependencies
+# =========================
 node_modules
+
+# =========================
+# Build folders
+# =========================
 dist
 dist-ssr
+build
+
+# =========================
+# Local config
+# =========================
 *.local
+
+# =========================
+# Temporary uploads
+# =========================
 backend/uploads_tmp/
 
-# Editor directories and files
+# =========================
+# Editor / OS files
+# =========================
 .vscode/*
 !.vscode/extensions.json
 .idea

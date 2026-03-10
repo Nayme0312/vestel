@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { motion } from "framer-motion";
 
-const WHATSAPP_NUMBER = "573107014249";
+const WHATSAPP_NUMBER = "573145952167";
 
 const Contact = () => {
   const { esNavidad } = useContext(ThemeContext);

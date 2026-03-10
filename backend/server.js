@@ -72,11 +72,16 @@ const upload = multer({
 /* ================= CONFIG CORREO ================= */
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT) || 465,
+  secure: true, // true para puerto 465
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
   },
+  tls: {
+    rejectUnauthorized: false 
+  }
 });
 
 /* ================= FUNCIONES SEGURIDAD ================= */
@@ -297,6 +302,8 @@ app.use((err, req, res, next) => {
 
 /* ================= START SERVER ================= */
 
-app.listen(3001, () => {
-  console.log("Servidor seguro corriendo en http://localhost:3001");
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => {
+  console.log(`Servidor activo en el puerto: ${PORT}`);
 });
