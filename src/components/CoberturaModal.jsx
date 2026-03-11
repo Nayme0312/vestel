@@ -15,24 +15,41 @@ const CoberturaModal = ({ abierto, cerrar }) => {
 
   if (!abierto) return null;
 
-  // Función para normalizar texto (Quita espacios, tildes y lo pone en minúsculas)
+  // Normalizar texto
   const normalizarTexto = (texto) => {
     return texto
       .toLowerCase()
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") // Quita tildes
-      .replace(/\s+/g, ""); // Quita todos los espacios
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "");
   };
 
+  // Parser flexible
   const parsearNumeros = (dir) => {
-    const regex = /^(\d+)\s*#\s*(\d+)-(\d+)$/;
-    const match = dir.match(regex);
+
+    const direccionLimpia = dir.trim().replace(/\s+/g, " ");
+
+    const regex = /^(calle|carrera|transversal|diagonal)\s*(\d+)\s*#\s*(\d+)\s*-\s*(\d+)$/i;
+
+    const match = direccionLimpia.match(regex);
+
     if (!match) return null;
 
     return {
-      numeroVia: parseInt(match[1]),
-      numeroPrincipal: parseInt(match[2]),
+      numeroVia: parseInt(match[2]),
+      numeroPrincipal: parseInt(match[3]),
     };
+  };
+
+  // 🔧 Formatear dirección automáticamente
+  const formatearDireccion = (texto) => {
+
+    let t = texto;
+
+    t = t.replace(/\s*#\s*/g, " # ");
+    t = t.replace(/\s*-\s*/g, "-");
+
+    return t;
   };
 
   const verificarCobertura = () => {
@@ -45,8 +62,9 @@ const CoberturaModal = ({ abierto, cerrar }) => {
     }
 
     const datosDir = parsearNumeros(direccion.trim());
+
     if (!datosDir) {
-      setMensaje("Dirección inválida. Ej: 30 # 50-86");
+      setMensaje(`Dirección inválida. Ej: ${tipoVia || "Calle"} 30 # 50-86`);
       return;
     }
 
@@ -59,7 +77,6 @@ const CoberturaModal = ({ abierto, cerrar }) => {
       return;
     }
 
-    // --- MEJORA EN LA BÚSQUEDA DEL BARRIO ---
     const barrioUsuarioNormalizado = normalizarTexto(barrioEscrito);
 
     const barrioEncontrado = ciudadData.barrios?.find(
@@ -71,15 +88,14 @@ const CoberturaModal = ({ abierto, cerrar }) => {
       return;
     }
 
-    // Lógica de Cobertura Total (Villanueva / Monterrey)
     if (ciudadData.coberturaTotal) {
       setMensaje(`¡Si tenemos cobertura en ${barrioEncontrado.nombre}, ${ciudadData.ciudad}!`);
       setEsExito(true);
       return;
     }
 
-    // Lógica de Rangos (Yopal)
     if (barrioEncontrado.limites) {
+
       const { carreraDesde, carreraHasta, calleDesde, calleHasta } = barrioEncontrado.limites;
 
       if (
@@ -112,6 +128,7 @@ const CoberturaModal = ({ abierto, cerrar }) => {
   const modalLayout = (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
       <div className="bg-white text-black rounded-3xl w-full max-w-md p-8 relative shadow-2xl">
+
         <button
           onClick={cerrar}
           className={`absolute top-5 right-5 text-xl font-bold text-gray-400 transition-colors ${
@@ -152,7 +169,11 @@ const CoberturaModal = ({ abierto, cerrar }) => {
         <select
           className={`${inputStyle} mb-4`}
           value={tipoVia}
-          onChange={(e) => setTipoVia(e.target.value)}
+          onChange={(e) => {
+            const via = e.target.value;
+            setTipoVia(via);
+            setDireccion(via + " ");
+          }}
         >
           <option value="">Tipo de vía</option>
           <option value="Carrera">Carrera</option>
@@ -163,12 +184,18 @@ const CoberturaModal = ({ abierto, cerrar }) => {
 
         <input
           type="text"
-          placeholder="Ej: 30 # 50-86"
+          placeholder={`Ej: ${tipoVia || "Calle"} 30 # 50-86`}
           className={`${inputStyle} mb-4`}
           value={direccion}
           onChange={(e) => {
-            setDireccion(e.target.value);
+            const texto = formatearDireccion(e.target.value);
+            setDireccion(texto);
             setMensaje(null);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              verificarCobertura();
+            }
           }}
         />
 
@@ -189,6 +216,7 @@ const CoberturaModal = ({ abierto, cerrar }) => {
             {mensaje}
           </p>
         )}
+
       </div>
     </div>
   );
