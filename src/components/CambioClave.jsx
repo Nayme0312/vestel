@@ -21,7 +21,7 @@ const CambioClave = () => {
     setErrorMsg("");
 
     try {
-      const res = await ffetch("https://www.vestelrea.com/api/cambio-clave", {
+      const res = await fetch("https://www.vestelrea.com/api/cambio-clave", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

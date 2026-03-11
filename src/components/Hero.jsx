@@ -79,14 +79,6 @@ const Hero = () => {
                     className="inline-block cursor-default relative"
                   >
                     Conexión
-
-                    {esNavidad && (
-                      <img
-                        src="/imgPrincipales/gorro1.png"
-                        alt="gorrito"
-                        className="absolute -top-1 -left-5 w-14 rotate-[-10deg]"
-                      />
-                    )}
                   </motion.span>
 
               {" "}
